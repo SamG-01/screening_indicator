@@ -45,7 +45,12 @@ class DetonationData:
             symmetric_screening=pynet.symmetric_screening
         )
         self.data["ScreenFactors"] = [
-            [pair.n1.Z, pair.n1.A, pair.n2.Z, pair.n2.A]
+            {
+                "z1": pair.n1.Z,
+                "a1": pair.n1.A,
+                "z2": pair.n2.Z,
+                "a2": pair.n2.A
+            }
             for pair in screen_map
         ]
 
