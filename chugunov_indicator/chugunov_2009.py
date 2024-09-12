@@ -3,6 +3,8 @@ import numpy as np
 from pynucastro.constants import constants
 from pynucastro.screening.screen import f0
 
+__all__ = ["chugunov_2009"]
+
 def PlasmaStateComps(dens: float, abar: float, zbar: float) -> float:
     """Returns `PlasmaState` values used in screening correction factor calculation in `NumPy`-friendly form."""
 
