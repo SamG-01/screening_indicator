@@ -16,10 +16,11 @@ class DetonationData:
         # Loads the data
         ds = yt.load(file)
         self.raw = ds.all_data()
+        self.data = {}
 
         # Stores temperature and density
-        self.temp = np.array(self.raw["Temp"])
-        self.dens = np.array(self.raw["density"])
+        self.data["temp"] = np.array(self.raw["Temp"])
+        self.data["dens"] = np.array(self.raw["density"])
 
         # Builds composition
         nuclei = [field[2:-1] for field in np.array(ds.field_list)[:,1] if "X(" in field]
@@ -31,9 +32,9 @@ class DetonationData:
         Zs = np.array(list(self.comp.Z.values()))
         Ys = Xs / As
 
-        self.abar = 1 / np.sum(Ys, axis=1)
-        self.zbar = np.sum(Zs * Ys, axis=1) * self.abar
-        self.z2bar = np.sum(Zs**2 * Ys, axis=1) * self.abar
+        self.data["abar"] = 1 / np.sum(Ys, axis=1)
+        self.data["zbar"] = np.sum(Zs * Ys, axis=1) * self.data["abar"]
+        self.data["z2bar"] = np.sum(Zs**2 * Ys, axis=1) * self.data["abar"]
 
         # Filters out screening pairs
         mynet = self.reaclib_library.linking_nuclei(self.comp.keys())
@@ -43,7 +44,25 @@ class DetonationData:
             pynet.get_rates(),
             symmetric_screening=pynet.symmetric_screening
         )
-        self.ScreenFactors = [
+        self.data["ScreenFactors"] = [
             [pair.n1.Z, pair.n1.A, pair.n2.Z, pair.n2.A]
             for pair in screen_map
         ]
+
+    def D_T_meshgrid(self, num=100) -> list[np.ndarray, np.ndarray]:
+        """
+        Returns a log-log meshgrid for density and temperature plotting.
+        
+        `num`: side length of the grid
+        """
+
+        temp = self.data["temp"]
+        dens = self.data["dens"]
+
+        T_min, T_max = temp.min(), temp.max()
+        D_min, D_max = dens.min(), dens.max()
+
+        T_ = np.logspace(np.log10(T_min), np.log10(T_max), num=num)
+        D_ = np.logspace(np.log10(D_min), np.log10(D_max), num=num)
+
+        return np.meshgrid(T_, D_)
