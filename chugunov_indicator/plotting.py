@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 
 __all__ = ["D_T_colorgraph"]
 
-def D_T_colorgraph(T, D, y) -> None:
+def D_T_colorgraph(T, D, y):
     """Creates a colormesh of y data on a D-T graph."""
 
     cb = plt.pcolormesh(T, D, y)
@@ -13,3 +13,5 @@ def D_T_colorgraph(T, D, y) -> None:
 
     plt.xscale("log")
     plt.yscale("log")
+
+    return cb, cbar
