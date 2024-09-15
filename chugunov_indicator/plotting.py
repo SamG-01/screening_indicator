@@ -2,16 +2,16 @@ from matplotlib import pyplot as plt
 
 __all__ = ["D_T_colorgraph"]
 
-def D_T_colorgraph(T, D, y):
-    """Creates a colormesh of y data on a D-T graph."""
+def D_T_colorgraph(T, D, y, fig, ax):
+    """Creates a colormesh of y-data on a D-T graph."""
 
-    cb = plt.pcolormesh(T, D, y)
-    cbar = plt.colorbar(cb)
+    cb = ax.pcolormesh(T, D, y)
+    cbar = fig.colorbar(cb)
 
-    plt.xlabel("$T$")
-    plt.ylabel("$\\rho$")
+    ax.set_xlabel("$T$")
+    ax.set_ylabel("$\\rho$")
 
-    plt.xscale("log")
-    plt.yscale("log")
+    ax.set_xscale("log")
+    ax.set_yscale("log")
 
     return cb, cbar
