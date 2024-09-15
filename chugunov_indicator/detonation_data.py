@@ -10,8 +10,7 @@ class DetonationData:
 
     reaclib_library = pyna.ReacLibLibrary()
 
-    def __init__(self, file: str, threshold: float = 1.01) -> None:
-        self.threshold = threshold
+    def __init__(self, file: str) -> None:
 
         # Loads the data
         ds = yt.load(file)
