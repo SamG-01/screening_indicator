@@ -1,5 +1,3 @@
-from matplotlib import pyplot as plt
-
 __all__ = ["D_T_setup", "D_T_colorgraph"]
 
 def D_T_setup(ax) -> None:
