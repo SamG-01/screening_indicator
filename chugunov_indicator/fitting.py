@@ -50,7 +50,7 @@ def border_from_grid(
     border = (1.01 * percent < F) & (F < 1.01)
     return T[border], D[border]
 
-@np.vectorize(excluded=["T","D"])
+@np.vectorize(excluded=["T","D"], signature="(),(),(),(),(),(),()->(2)")
 def parameters_from_vars(
         abar: float, zbar: float, z2bar: float, z1: float, z2: float,
         T: np.ndarray, D: np.ndarray,
@@ -75,3 +75,25 @@ def parameters_from_vars(
     F = chugunov_2009(T, D, abar, zbar, z2bar, z1, a1, z2, a2)
     T_border, D_border = border_from_grid(T, D, F)
     return parameters_from_border(T_border, D_border)
+
+def _parameters_from_vars_array(
+        X: np.ndarray, T: np.ndarray, D: np.ndarray,
+        a1: float = 4, a2: float = 12
+    ) -> np.ndarray[float, float]:
+    """
+    Finds `parameters_from_vars` using an array of inputs.
+    """
+
+    abar, zbar, z2bar, z1, z2 = X
+    return parameters_from_vars(abar, zbar, z2bar, z1, z2, T, D, a1, a2)
+
+def parameters_fit(T: np.ndarray, D: np.ndarray):
+    abar_ = np.linspace(1, 60, 120)
+    zbar_ = z1_ = z2_ = np.linspace(1, 30, 60)
+    z2bar_ = np.linspace(1, 700, 1400)
+
+    X = np.meshgrid(abar_, zbar_, z2bar_, z1_, z2_)
+    for j, x in enumerate(X):
+        X[j] = np.ravel(x)
+
+    Y = _parameters_from_vars_array(X, T, D)
