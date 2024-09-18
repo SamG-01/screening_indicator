@@ -21,7 +21,8 @@ def border_func(T_border: np.ndarray, c: float, k: float) -> np.ndarray:
     return 1/10**c * T_border**k
 
 def parameters_from_border(
-        T_border: np.ndarray, D_border: np.ndarray
+        T_border: np.ndarray, D_border: np.ndarray,
+        return_pcov: bool = False
     ) -> np.ndarray[float, float]:
     """
     Finds the parameters (c, k) of the D-T border curve given its x and y data.
@@ -29,14 +30,19 @@ def parameters_from_border(
     Keyword arguments:
         `T_border`: temperatures (x-values) along the border
         `D_border`: densities (y-values) along the border
+        `return_pcov`: whether or not to return the covariance matrix
 
-    Returns: `np.ndarray` of the form `(c, k)`
-        `c`: `y`-intercept of the border curve in log-log space
-        `k`: slope of the border curve in log-log space
+    Returns:
+        `popt`: `np.ndarray` of the form `(c, k)`
+            `c`: `y`-intercept of the border curve in log-log space
+            `k`: slope of the border curve in log-log space
+        `pcov`: (returned only if `return_pcov` is True)
     """
 
     # pylint: disable=unbalanced-tuple-unpacking
     popt, pcov = curve_fit(border_func, T_border, D_border, p0 = (23, 3))
+    if return_pcov:
+        return popt, pcov
     return popt
 
 def border_from_grid(
@@ -50,11 +56,12 @@ def border_from_grid(
     border = (1.01 * percent < F) & (F < 1.01)
     return T[border], D[border]
 
-@np.vectorize(excluded=["T","D"], signature="(),(),(),(),(),(),()->(2)")
+@np.vectorize(excluded=["T","D","return_pcov"], signature="(),(),(),(),(),(),()->(2)")
 def parameters_from_vars(
         abar: float, zbar: float, z2bar: float, z1: float, z2: float,
         T: np.ndarray, D: np.ndarray,
-        a1: float = 4, a2: float = 12
+        a1: float = 4, a2: float = 12,
+        return_pcov: bool = False
     ) -> np.ndarray[float, float]:
     """
     Finds the parameters (c, k) of the D-T border curve given physical variables.
@@ -66,10 +73,13 @@ def parameters_from_vars(
         `z1`, `z2`: the atomic numbers of the screening pair nuclei
         `T`, `D`: the temperature and density `meshgrid` the curve is on
         `a1`, `a2`: the mass numbers of the screening pair nuclei (shouldn't matter)
-    
-    Returns: `np.ndarray` of the form `(c, k)`
-        `c`: `y`-intercept of the border curve in log-log space
-        `k`: slope of the border curve in log-log space
+        `return_pcov`: whether or not to return the covariance matrix
+
+    Returns:
+        `popt`: `np.ndarray` of the form `(c, k)`
+            `c`: `y`-intercept of the border curve in log-log space
+            `k`: slope of the border curve in log-log space
+        `pcov`: (returned only if `return_pcov` is True)
     """
 
     F = chugunov_2009(T, D, abar, zbar, z2bar, z1, a1, z2, a2)
