@@ -84,7 +84,7 @@ def parameters_from_vars(
 
     F = chugunov_2009(T, D, abar, zbar, z2bar, z1, a1, z2, a2)
     T_border, D_border = border_from_grid(T, D, F)
-    return parameters_from_border(T_border, D_border)
+    return parameters_from_border(T_border, D_border, return_pcov)
 
 def _parameters_from_vars_array(
         X: np.ndarray, T: np.ndarray, D: np.ndarray,
