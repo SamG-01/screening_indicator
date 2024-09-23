@@ -5,12 +5,12 @@ from pynucastro.screening.screen import f0
 
 __all__ = ["chugunov_2009"]
 
-def PlasmaStateComps(dens: float, abar: float, zbar: float) -> float:
+def PlasmaStateComps(D: float, abar: float, zbar: float) -> float:
     """Returns `PlasmaState` values used in screening correction factor calculation in `NumPy`-friendly form."""
 
     # Average mass and total number density
     mbar = abar * constants.m_u
-    ntot = dens / mbar
+    ntot = D / mbar
 
     # Electron number density
     # zbar * ntot works out to sum(z[i] * n[i]), after cancelling terms
@@ -38,10 +38,10 @@ def ScreenFactorsComps(
     return aznut, ztilde
 
 def chugunov_2009(
-        temp: float, dens: float,
+        T: float, D: float,
         abar: float, zbar: float, z2bar: float,
-        z1: int, a1: int,
-        z2: int, a2: int
+        z1: int, z2: int,
+        a1: int, a2: int,
     ) -> float:
     """Calculates screening factors based on :cite:t:`chugunov:2009` in `NumPy`-friendly form.
 
@@ -51,7 +51,7 @@ def chugunov_2009(
     """
 
     # Precomputed Values
-    gamma_e_fac = PlasmaStateComps(dens, abar, zbar)
+    gamma_e_fac = PlasmaStateComps(D, abar, zbar)
     aznut, ztilde = ScreenFactorsComps(z1, a1, z2, a2)
 
     # z1z2 and zcomp
@@ -59,7 +59,7 @@ def chugunov_2009(
     zcomp = z1 + z2
 
     # Gamma_e from eq. 6
-    Gamma_e = gamma_e_fac / temp
+    Gamma_e = gamma_e_fac / T
 
     # Coulomb coupling parameters for ions and compound nucleus, eqs. 7 & 9
     Gamma_1 = Gamma_e * z1 ** (5 / 3)
@@ -70,7 +70,7 @@ def chugunov_2009(
 
     # Coulomb barrier penetrability, eq. 10
     tau_factor = np.cbrt(27 / 2 * (np.pi * constants.q_e ** 2 / constants.hbar) ** 2 * constants.m_u / constants.k)
-    tau_12 = tau_factor * aznut / np.cbrt(temp)
+    tau_12 = tau_factor * aznut / np.cbrt(T)
 
     # eq. 12
     zeta = 3 * Gamma_12 / tau_12
