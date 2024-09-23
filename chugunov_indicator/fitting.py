@@ -20,19 +20,19 @@ def border_func(T_border: np.ndarray, c: float) -> np.ndarray:
     return 1/10**c * T_border**3
 
 def border_from_grid(
-        T: np.ndarray, D: np.ndarray,
-        F: np.ndarray, percent: float = 0.995
+        T: np.ndarray, D: np.ndarray, F: np.ndarray,
+        lower: float = 1.0075, upper: float = 1.0125
     ) -> tuple[np.ndarray, np.ndarray]:
     """
     Finds the x and y data of the D-T border curve given screening factors on a grid.
     """
 
-    border = (1.01 * percent < F) & (F < 1.01)
+    border = (lower < F) & (F < upper)
     return np.where(border, T, 0), np.where(border, D, 0)
 
 def _intercept_from_border(
         T_border: np.ndarray, D_border: np.ndarray, return_pcov: bool = False
-    ) -> float:
+    ) -> np.float32:
     """
     Finds the negative y-intercept `c` of the D-T border curve given its x and y data.
 
@@ -53,10 +53,10 @@ def _intercept_from_border(
     )
     if return_pcov:
         return popt, pcov
-    return popt
+    return np.float32(popt)
 
-@np.vectorize(signature="(n,n),(n,n)->()")
-def intercept_from_border(T_border: np.ndarray, D_border: np.ndarray) -> float:
+@np.vectorize(signature="(n,n),(n,n)->()", otypes=[np.float32])
+def intercept_from_border(T_border: np.ndarray, D_border: np.ndarray) -> np.float32:
     """
     Finds the negative y-intercept `c` of the D-T border curve given its x and y data. Vectorized version of _paramters_from_border.
 
@@ -78,8 +78,8 @@ def intercept_from_vars(
         abar: float, zbar: float, z2bar: float,
         z1: float, z2: float,
         a1: int = 4, a2: int = 12,
-        percent: float = 0.995
-    ) -> float:
+        lower: float = 1.0075, upper: float = 1.0125
+    ) -> np.float32:
     """
     Finds the negative y-intercept `c` of the D-T border curve given physical variables.
 
@@ -90,12 +90,12 @@ def intercept_from_vars(
         `z2bar`: the average squared atomic number of the composition
         `z1`, `z2`: the atomic numbers of the screening pair nuclei
         `a1`, `a2`: the mass numbers of the screening pair nuclei (shouldn't matter)
-        `percent`: determines the thickness of the border line
+        `lower`, `upper`: determines the upper and lower bounds of the border line
 
     Returns:
         `c`: negative `y`-intercept of the border curve in log-log space
     """
 
     F = chugunov_2009(T, D, abar, zbar, z2bar, z1, z2, a1, a2)
-    T_border, D_border = border_from_grid(T, D, F, percent)
+    T_border, D_border = border_from_grid(T, D, F, lower, upper)
     return intercept_from_border(T_border, D_border)
