@@ -21,7 +21,7 @@ def border_func(T_border: np.ndarray, c: float) -> np.ndarray:
 
 def border_from_grid(
         T: np.ndarray, D: np.ndarray, F: np.ndarray,
-        lower: float = 1.0075, upper: float = 1.0125
+        lower: float = 1.005, upper: float = 1.01
     ) -> tuple[np.ndarray, np.ndarray]:
     """
     Finds the x and y data of the D-T border curve given screening factors on a grid.
@@ -78,7 +78,7 @@ def intercept_from_vars(
         abar: float, zbar: float, z2bar: float,
         z1: float, z2: float,
         a1: int = 4, a2: int = 12,
-        lower: float = 1.0075, upper: float = 1.0125
+        lower: float = 1.005, upper: float = 1.01
     ) -> np.float32:
     """
     Finds the negative y-intercept `c` of the D-T border curve given physical variables.
