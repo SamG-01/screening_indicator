@@ -19,10 +19,8 @@ def border_func(T_border: np.ndarray, c: float) -> np.ndarray:
 
     return 1/10**c * T_border**3
 
-@np.vectorize(signature="(n,n),(n,n),()->()")
-def parameters_from_border(
-        T_border: np.ndarray, D_border: np.ndarray,
-        return_pcov: bool = False
+def _parameters_from_border(
+        T_border: np.ndarray, D_border: np.ndarray, return_pcov: bool = False
     ) -> float:
     """
     Finds the negative y-intercept `c` of the D-T border curve given its x and y data.
@@ -30,15 +28,12 @@ def parameters_from_border(
     Keyword arguments:
         `T_border`: temperatures (x-values) along the border
         `D_border`: densities (y-values) along the border
-        `return_pcov`: whether or not to return the covariance matrix
+        `return_pcov`: whether to return `pcov`
 
     Returns:
         `popt`: negative`y`-intercept of the border curve in log-log space
-        `pcov`: variance of `c` (returned only if `return_pcov` is True)
+        `pcov`: variance of `popt`
     """
-
-    T_border, D_border = np.ravel(T_border), np.ravel(D_border)
-    T_border, D_border = T_border[T_border != 0], D_border[T_border != 0]
 
     # pylint: disable=unbalanced-tuple-unpacking
     (popt,), ((pcov,),) = curve_fit(
@@ -46,12 +41,32 @@ def parameters_from_border(
         p0 = (23,), bounds=(18, 27.5)
     )
     if return_pcov:
-        return np.array([popt, pcov])
+        return popt, pcov
     return popt
+
+@np.vectorize(signature="(n,n),(n,n)->()")
+def parameters_from_border(
+        T_border: np.ndarray, D_border: np.ndarray
+    ) -> float:
+    """
+    Finds the negative y-intercept `c` of the D-T border curve given its x and y data. Vectorized version of _paramters_from_border.
+
+    Keyword arguments:
+        `T_border`: temperatures (x-values) along the border
+        `D_border`: densities (y-values) along the border
+
+    Returns:
+        `c`: negative`y`-intercept of the border curve in log-log space
+    """
+
+    T_border, D_border = np.ravel(T_border), np.ravel(D_border)
+    T_border, D_border = T_border[T_border != 0], D_border[T_border != 0]
+
+    return _parameters_from_border(T_border, D_border, False)
 
 def border_from_grid(
         T: np.ndarray, D: np.ndarray,
-        F: np.ndarray, percent: float = 0.99875
+        F: np.ndarray, percent: float = 0.995
     ) -> tuple[np.ndarray, np.ndarray]:
     """
     Finds the x and y data of the D-T border curve given screening factors on a grid.
@@ -83,26 +98,4 @@ def parameters_from_vars(
 
     F = chugunov_2009(T, D, abar, zbar, z2bar, z1, a1, z2, a2)
     T_border, D_border = border_from_grid(T, D, F, percent)
-    return parameters_from_border(T_border, D_border, False)
-
-def _parameters_from_vars_array(
-        X: np.ndarray, T: np.ndarray, D: np.ndarray,
-        a1: float = 4, a2: float = 12
-    ) -> np.ndarray[float, float]:
-    """
-    Finds `parameters_from_vars` using an array of inputs.
-    """
-
-    abar, zbar, z2bar, z1, z2 = X
-    return parameters_from_vars(abar, zbar, z2bar, z1, z2, T, D, a1, a2)
-
-def parameters_fit(T: np.ndarray, D: np.ndarray):
-    abar_ = np.linspace(1, 60, 120)
-    zbar_ = z1_ = z2_ = np.linspace(1, 30, 60)
-    z2bar_ = np.linspace(1, 700, 1400)
-
-    X = np.meshgrid(abar_, zbar_, z2bar_, z1_, z2_)
-    for j, x in enumerate(X):
-        X[j] = np.ravel(x)
-
-    Y = _parameters_from_vars_array(X, T, D)
+    return parameters_from_border(T_border, D_border)
