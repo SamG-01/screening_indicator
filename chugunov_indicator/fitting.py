@@ -26,8 +26,7 @@ def border_from_grid(
     """
     Finds the x and y data of the D-T border curve given screening factors on a grid.
     """
-
-    border = (lower < F) & (F < upper)
+    border = (lower <= F) & (F <= upper)
     return np.where(border, T, 0), np.where(border, D, 0)
 
 def _intercept_from_border(
