@@ -10,7 +10,7 @@ def intercept_interpolator(
     Creates an Interpolator for finding the y-intercept of the D-T border curve.
     
     Keyword arguments:
-        `inputs`: a 5D grid of points (abar, zbar, z2bar, z1, z2)
+        `inputs`: a 4D grid of points (abar, z2bar, z1, z2)
         `intercepts`: the negative y-intercepts computed from the `inputs`
     """
 
@@ -27,10 +27,10 @@ def skip_screening(state, scn_fac, interpolator: RegularGridInterpolator) -> boo
         `interpolator`: an interpolator from `intercept_interpolator`
     """
 
-    abar, zbar, z2bar = state.abar, state.zbar, state.z2bar
+    abar, z2bar = state.abar, state.z2bar
     z1, z2 = scn_fac.z1, scn_fac.z2
 
-    xi = [abar, zbar, z2bar, z1, z2]
+    xi = [abar, z2bar, z1, z2]
 
     c = interpolator(xi)
 

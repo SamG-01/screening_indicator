@@ -74,9 +74,9 @@ def intercept_from_border(T_border: np.ndarray, D_border: np.ndarray) -> np.floa
 
 def intercept_from_vars(
         T: np.ndarray, D: np.ndarray,
-        abar: float, zbar: float, z2bar: float,
+        abar: float, z2bar: float,
         z1: float, z2: float,
-        a1: int = 4, a2: int = 12,
+        zbar: float = 4, a1: int = 4, a2: int = 12,
         lower: float = 1.005, upper: float = 1.01
     ) -> np.float32:
     """
