@@ -105,7 +105,7 @@ def chugunov_2009(
     h12 = numer / denom * h_fit
 
     # machine limit the output
-    h12_max = 200
+    h12_max = 20
     h12 = np.where(h12 >= h12_max, h12_max, h12)
     scor = np.exp(h12)
 
