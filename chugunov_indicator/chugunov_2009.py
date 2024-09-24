@@ -5,19 +5,19 @@ from pynucastro.screening.screen import f0
 
 __all__ = ["chugunov_2009"]
 
-def PlasmaStateComps(dens: float, abar: float, zbar: float) -> float:
+def PlasmaStateComps(D: float, abar: float, zbar: float) -> float:
     """Returns `PlasmaState` values used in screening correction factor calculation in `NumPy`-friendly form."""
 
     # Average mass and total number density
-    mbar = abar * constants.m_u
-    ntot = dens / mbar
+    mbar = abar * np.float32(constants.m_u)
+    ntot = D / mbar
 
     # Electron number density
     # zbar * ntot works out to sum(z[i] * n[i]), after cancelling terms
     n_e = zbar * ntot
 
     # temperature-independent part of Gamma_e, from Chugunov 2009 eq. 6
-    gamma_e_fac = constants.q_e ** 2 / constants.k * np.cbrt(4 * np.pi / 3) * np.cbrt(n_e)
+    gamma_e_fac = np.float32(constants.q_e ** 2 / constants.k * np.cbrt(4 * np.pi / 3)) * np.cbrt(n_e)
 
     return gamma_e_fac
 
@@ -31,17 +31,17 @@ def ScreenFactorsComps(
     #zhat = (z1 + z2) ** (5/3) - z1 ** (5/3) - z2 ** (5/3)
     #zhat2 = (z1 + z2) ** (5/12) - z1 ** (5/12) - z2 ** (5/12)
     #lzav = (5/3) * np.log(z1 * z2 / (z1 + z2))
-    aznut = np.cbrt(z1 ** 2 * z2 ** 2 * a1 * a2 / (a1 + a2))
+    aznut = np.cbrt(z1 ** 2 * z2 ** 2 * a1 * a2 / (a1 + a2), dtype=np.float32)
     ztilde = 0.5 * (np.cbrt(z1) + np.cbrt(z2))
 
     #return zs13, zhat, zhat2, lzav, aznut, ztilde
     return aznut, ztilde
 
 def chugunov_2009(
-        temp: float, dens: float,
+        T: float, D: float,
         abar: float, zbar: float, z2bar: float,
-        z1: int, a1: int,
-        z2: int, a2: int
+        z1: int, z2: int,
+        a1: int, a2: int,
     ) -> float:
     """Calculates screening factors based on :cite:t:`chugunov:2009` in `NumPy`-friendly form.
 
@@ -51,7 +51,7 @@ def chugunov_2009(
     """
 
     # Precomputed Values
-    gamma_e_fac = PlasmaStateComps(dens, abar, zbar)
+    gamma_e_fac = PlasmaStateComps(D, abar, zbar)
     aznut, ztilde = ScreenFactorsComps(z1, a1, z2, a2)
 
     # z1z2 and zcomp
@@ -59,7 +59,7 @@ def chugunov_2009(
     zcomp = z1 + z2
 
     # Gamma_e from eq. 6
-    Gamma_e = gamma_e_fac / temp
+    Gamma_e = gamma_e_fac / T
 
     # Coulomb coupling parameters for ions and compound nucleus, eqs. 7 & 9
     Gamma_1 = Gamma_e * z1 ** (5 / 3)
@@ -69,8 +69,8 @@ def chugunov_2009(
     Gamma_12 = Gamma_e * z1z2 / ztilde
 
     # Coulomb barrier penetrability, eq. 10
-    tau_factor = np.cbrt(27 / 2 * (np.pi * constants.q_e ** 2 / constants.hbar) ** 2 * constants.m_u / constants.k)
-    tau_12 = tau_factor * aznut / np.cbrt(temp)
+    tau_factor = np.cbrt(27 / 2 * (np.pi * constants.q_e ** 2 / constants.hbar) ** 2 * constants.m_u / constants.k, dtype=np.float32)
+    tau_12 = tau_factor * aznut / np.cbrt(T, dtype=np.float32)
 
     # eq. 12
     zeta = 3 * Gamma_12 / tau_12
@@ -90,7 +90,7 @@ def chugunov_2009(
     term1 = f0(Gamma_1 / t_12)
     term2 = f0(Gamma_2 / t_12)
     term3 = f0(Gamma_comp / t_12)
-    h_fit = term1 + term2 - term3
+    h_fit = np.float32(term1 + term2 - term3)
 
     # weak screening correction term, eq. A3
     corr_C = (
@@ -105,7 +105,7 @@ def chugunov_2009(
     h12 = numer / denom * h_fit
 
     # machine limit the output
-    h12_max = 300
+    h12_max = 20
     h12 = np.where(h12 >= h12_max, h12_max, h12)
     scor = np.exp(h12)
 
