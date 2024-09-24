@@ -48,7 +48,7 @@ def _intercept_from_border(
     # pylint: disable=unbalanced-tuple-unpacking
     (popt,), ((pcov,),) = curve_fit(
         border_func, T_border, D_border,
-        p0 = (23,), bounds=(17, 28)
+        p0 = (23,), bounds=(21, 32)
     )
     if return_pcov:
         return popt, pcov
