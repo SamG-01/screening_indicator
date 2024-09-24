@@ -9,13 +9,13 @@ class DefaultScreeningData:
     """Stores default data for screening indicator functions."""
 
     arrays = {
-        "T": np.logspace(7, 9.35, 50, dtype=np.float32),
-        "D": np.logspace(-4, 8, 50, dtype=np.float32),
-        "abar": np.linspace(2, 50, 12, dtype=np.float32),
-        "zbar": np.linspace(2, 30, 12, dtype=np.float32),
-        "z2bar": np.linspace(4, 700, 12, dtype=np.float32),
-        "z1": np.linspace(1, 20, 12, dtype=np.float32),
-        "z2": np.linspace(1, 20, 12, dtype=np.float32)
+        "abar": np.linspace(4, 52, 15, dtype=np.float32),
+        "zbar": np.linspace(2, 26, 15, dtype=np.float32),
+        "z2bar": np.linspace(4, 700, 15, dtype=np.float32),
+        "z1": np.linspace(1, 10, 15, dtype=np.float32),
+        "z2": np.linspace(1, 10, 15, dtype=np.float32),
+        "T": np.logspace(7, 9.35, 35, dtype=np.float32),
+        "D": np.logspace(-4, 8, 35, dtype=np.float32)
     }
 
     _grids = np.meshgrid(*arrays.values(), sparse=True)
@@ -24,10 +24,10 @@ class DefaultScreeningData:
     for j, k in enumerate(arrays):
         grids[k] = _grids[j]
 
-    inputs = [*arrays.values()]
+    inputs = [*arrays.values()][:-2]
 
     try:
-        intercepts = np.load("intercepts.npy")
+        intercepts = np.load("./intercepts.npy")
     except FileNotFoundError:
         intercepts = intercept_from_vars(**grids)
         np.save("intercepts", intercepts)
