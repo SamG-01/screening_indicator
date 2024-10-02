@@ -74,7 +74,7 @@ def intercept_from_border(T_border: np.ndarray, D_border: np.ndarray) -> np.floa
 
 def intercept_from_vars(
         T: np.ndarray, D: np.ndarray,
-        abar: float, z2bar: float,
+        abar: float, log_z2bar: float,
         z1: float, z2: float,
         zbar: float = 4, a1: int = 4, a2: int = 12,
         lower: float = 1.005, upper: float = 1.01
@@ -94,6 +94,8 @@ def intercept_from_vars(
     Returns:
         `c`: negative `y`-intercept of the border curve in log-log space
     """
+
+    z2bar = 10**log_z2bar
 
     F = chugunov_2009(T, D, abar, zbar, z2bar, z1, z2, a1, a2)
     T_border, D_border = border_from_grid(T, D, F, lower, upper)

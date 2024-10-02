@@ -15,7 +15,7 @@ class DefaultScreeningData:
 
     arrays = {
         "abar": np.linspace(1, 75, 25, dtype=np.float32),
-        "z2bar": np.logspace(0.6, 3, 25, dtype=np.float32),
+        "log_z2bar": np.linspace(0.6, 3, 25, dtype=np.float32),
         "z1": np.linspace(1, 20, 25, dtype=np.float32),
         "z2": np.linspace(1, 20, 25, dtype=np.float32),
         "T": np.logspace(7, 9.35, 35, dtype=np.float32),
