@@ -9,7 +9,7 @@ def PlasmaStateComps(D: float, abar: float, zbar: float) -> float:
     """Returns `PlasmaState` values used in screening correction factor calculation in `NumPy`-friendly form."""
 
     # Average mass and total number density
-    mbar = abar * np.float32(constants.m_u)
+    mbar = abar * constants.m_u
     ntot = D / mbar
 
     # Electron number density
@@ -17,7 +17,7 @@ def PlasmaStateComps(D: float, abar: float, zbar: float) -> float:
     n_e = zbar * ntot
 
     # temperature-independent part of Gamma_e, from Chugunov 2009 eq. 6
-    gamma_e_fac = np.float32(constants.q_e ** 2 / constants.k * np.cbrt(4 * np.pi / 3)) * np.cbrt(n_e)
+    gamma_e_fac = constants.q_e ** 2 / constants.k * np.cbrt(4 * np.pi / 3) * np.cbrt(n_e)
 
     return gamma_e_fac
 
@@ -31,7 +31,7 @@ def ScreenFactorsComps(
     #zhat = (z1 + z2) ** (5/3) - z1 ** (5/3) - z2 ** (5/3)
     #zhat2 = (z1 + z2) ** (5/12) - z1 ** (5/12) - z2 ** (5/12)
     #lzav = (5/3) * np.log(z1 * z2 / (z1 + z2))
-    aznut = np.cbrt(z1 ** 2 * z2 ** 2 * a1 * a2 / (a1 + a2), dtype=np.float32)
+    aznut = np.cbrt(z1 ** 2 * z2 ** 2 * a1 * a2 / (a1 + a2))
     ztilde = 0.5 * (np.cbrt(z1) + np.cbrt(z2))
 
     #return zs13, zhat, zhat2, lzav, aznut, ztilde
@@ -69,8 +69,8 @@ def chugunov_2009(
     Gamma_12 = Gamma_e * z1z2 / ztilde
 
     # Coulomb barrier penetrability, eq. 10
-    tau_factor = np.cbrt(27 / 2 * (np.pi * constants.q_e ** 2 / constants.hbar) ** 2 * constants.m_u / constants.k, dtype=np.float32)
-    tau_12 = tau_factor * aznut / np.cbrt(T, dtype=np.float32)
+    tau_factor = np.cbrt(27 / 2 * (np.pi * constants.q_e ** 2 / constants.hbar) ** 2 * constants.m_u / constants.k)
+    tau_12 = tau_factor * aznut / np.cbrt(T)
 
     # eq. 12
     zeta = 3 * Gamma_12 / tau_12
@@ -90,7 +90,7 @@ def chugunov_2009(
     term1 = f0(Gamma_1 / t_12)
     term2 = f0(Gamma_2 / t_12)
     term3 = f0(Gamma_comp / t_12)
-    h_fit = np.float32(term1 + term2 - term3)
+    h_fit = term1 + term2 - term3
 
     # weak screening correction term, eq. A3
     corr_C = (
