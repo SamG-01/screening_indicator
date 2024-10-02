@@ -14,12 +14,12 @@ class DefaultScreeningData:
     """Stores default data for screening indicator functions."""
 
     arrays = {
-        "abar": np.linspace(1, 75, 20, dtype=np.float32),
-        "log_z2bar": np.linspace(0, 3, 20, dtype=np.float32),
-        "z1": np.linspace(1, 25, 20, dtype=np.float32),
-        "z2": np.linspace(1, 25, 20, dtype=np.float32),
-        "T": np.logspace(7, 9.35, 35, dtype=np.float32),
-        "D": np.logspace(-4, 8, 35, dtype=np.float32)
+        "abar": np.linspace(1, 75, 20),
+        "log_z2bar": np.linspace(0, 3, 20),
+        "z1": np.linspace(1, 25, 20),
+        "z2": np.linspace(1, 25, 20),
+        "log_T": np.linspace(7, 9.35, 35),
+        "log_D": np.linspace(-4, 8, 35)
     }
 
     _grids = np.meshgrid(*arrays.values(), sparse=True, indexing="ij")
@@ -29,7 +29,7 @@ class DefaultScreeningData:
         grids[k] = _grids[j]
 
     inputs = [*arrays.values()][:-2]
-
+    
     try:
         intercepts = np.load(intercept_file)
     except FileNotFoundError:
