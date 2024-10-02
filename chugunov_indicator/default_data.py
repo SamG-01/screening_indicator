@@ -14,10 +14,10 @@ class DefaultScreeningData:
     """Stores default data for screening indicator functions."""
 
     arrays = {
-        "abar": np.linspace(1, 75, 25, dtype=np.float32),
-        "log_z2bar": np.linspace(0.6, 3, 25, dtype=np.float32),
-        "z1": np.linspace(1, 20, 25, dtype=np.float32),
-        "z2": np.linspace(1, 20, 25, dtype=np.float32),
+        "abar": np.linspace(1, 75, 20, dtype=np.float32),
+        "log_z2bar": np.linspace(0, 3, 20, dtype=np.float32),
+        "z1": np.linspace(1, 25, 20, dtype=np.float32),
+        "z2": np.linspace(1, 25, 20, dtype=np.float32),
         "T": np.logspace(7, 9.35, 35, dtype=np.float32),
         "D": np.logspace(-4, 8, 35, dtype=np.float32)
     }
@@ -36,4 +36,4 @@ class DefaultScreeningData:
         intercepts = intercept_from_vars(**grids)
         np.save(intercept_file, intercepts)
 
-    default_interpolator = intercept_interpolator(inputs, intercepts, method="cubic")
+    default_interpolator = intercept_interpolator(inputs, intercepts, method="slinear")
