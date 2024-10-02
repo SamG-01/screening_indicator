@@ -29,7 +29,7 @@ class DefaultScreeningData:
         grids[k] = _grids[j]
 
     inputs = [*arrays.values()][:-2]
-    
+
     try:
         intercepts = np.load(intercept_file)
     except FileNotFoundError:
