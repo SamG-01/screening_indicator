@@ -17,8 +17,11 @@ def intercept_interpolator(
 
     return RegularGridInterpolator(inputs, intercepts, method)
 
-# pylint: disable=dangerous-default-value
-def skip_screening(state, scn_fac, interpolator: RegularGridInterpolator) -> bool:
+def skip_screening(
+        plasma, scn_fac,
+        interpolator: RegularGridInterpolator,
+        method: str = "cubic"
+    ) -> bool:
     """
     Predicts whether screening can be skipped for a given rate calculation.
 
@@ -28,12 +31,12 @@ def skip_screening(state, scn_fac, interpolator: RegularGridInterpolator) -> boo
         `interpolator`: an interpolator from `intercept_interpolator`
     """
 
-    abar, z2bar = state.abar, state.z2bar
+    abar, z2bar = plasma.abar, plasma.z2bar
     z1, z2 = scn_fac.z1, scn_fac.z2
 
     xi = [abar, np.log10(z2bar), z1, z2]
 
-    c = interpolator(xi)
+    c = interpolator(xi, method)
 
-    T, D = state.temp, state.dens
+    T, D = plasma.temp, plasma.dens
     return D < 1/10**c * T**3
