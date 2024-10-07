@@ -1,13 +1,13 @@
 import numpy as np
-from scipy.interpolate import RegularGridInterpolator
+from intergrid.intergrid import Intergrid
 
 __all__ = ["intercept_interpolator", "skip_screening"]
 
 def intercept_interpolator(
-        inputs: tuple, intercepts, **kwargs
-    ) -> RegularGridInterpolator:
+        intercepts: np.ndarray, lo: np.ndarray, hi: np.ndarray, **kwargs
+    ) -> Intergrid:
     """
-    Creates an Interpolator for finding the y-intercept of the D-T border curve.
+    Creates an interpolator for finding the y-intercept of the D-T border curve.
     
     Keyword arguments:
         `inputs`: a 4D grid of points (abar, log_z2bar, z1, z2)
@@ -15,11 +15,11 @@ def intercept_interpolator(
         `kwargs`: additional keyword arguments to pass into `interpolator`
     """
 
-    return RegularGridInterpolator(inputs, intercepts, **kwargs)
+    return Intergrid(intercepts, lo, hi, **kwargs)
 
 def skip_screening(
         plasma, scn_fac,
-        interpolator: RegularGridInterpolator,
+        interpolator: Intergrid,
         **kwargs
     ) -> bool:
     """
@@ -35,7 +35,7 @@ def skip_screening(
     abar, z2bar = plasma.abar, plasma.z2bar
     z1, z2 = scn_fac.z1, scn_fac.z2
 
-    xi = [abar, np.log10(z2bar), z1, z2]
+    xi = np.array([abar, np.log10(z2bar), z1, z2])
 
     c = interpolator(xi, **kwargs)
 
