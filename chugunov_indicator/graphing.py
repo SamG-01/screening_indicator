@@ -4,12 +4,13 @@ from typing import Callable
 import matplotlib
 from matplotlib.widgets import Slider, Button
 
+__all__ = ["SliderGraph"]
 @dataclass()
 class SliderGraph:
     fig: matplotlib.figure.Figure
     ax: matplotlib.axes.Axes
     params: dict[str: (float, float)]
-    update: Callable[[float], None]
+    update: Callable[[float], None] = lambda val: None
 
     def __post_init__(self) -> None:
         """
@@ -28,8 +29,6 @@ class SliderGraph:
 
             # Create sliders
             self.sliders[param] = Slider(self.ax_sliders[param], param, min_, max_, valinit=min_)
-            # Call update function when slider value is changed
-            self.sliders[param].on_changed(self.update)
 
         # Create axes for reset button and create button
         self.resetax = self.fig.add_axes([0.8, 0.105, 0.1, 0.04])
@@ -41,8 +40,14 @@ class SliderGraph:
 
         self.button.on_clicked(resetSlider)
 
-    def change_update(self, new_update: Callable[[float], None]) -> None:
+    def update_func(self, new_update: Callable[[float], None]) -> None:
         """Changes the update function for the sliders."""
 
+        self.update = new_update
         for slider in self.sliders.values():
-            slider.on_changed(new_update)
+            slider.on_changed(self.update)
+
+    def slider_vals(self) -> dict[str: float]:
+        """Returns the current slider values."""
+
+        return {param: self.sliders[param].val for param in self.params}
