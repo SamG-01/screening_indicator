@@ -6,7 +6,12 @@ __all__ = ["skip_chugunov_2009"]
 @njit()
 def _screening_intercept(abar: float, z2bar: float, z1: float, z2: float) -> float:
     """
-    Predicts the height of the D-T line that decides when screening is important.
+    Predicts the negative `y`-intercept of the D-T line that decides when `chugunov_2009` screening is important.
+
+    Keyword arguments:
+        `abar`: the average atomic mass of the `PlasmaState`
+        `z2bar`: the average squared atomic number of the `PlasmaState`
+        `z1`, `z2`: the atomic numbers of the `ScreenFactors` nuclei
     """
 
     m1 = 1.03
@@ -32,7 +37,7 @@ def skip_chugunov_2009(plasma, scn_fac) -> bool:
 
     abar, z2bar = plasma.abar, plasma.z2bar
     z1, z2 = scn_fac.z1, scn_fac.z2
-    T, D = plasma.temp, plasma.dens
-
     C = _screening_intercept(abar, z2bar, z1, z2)
+
+    T, D = plasma.temp, plasma.dens
     return np.log10(D) < 3 * np.log10(T) - C
