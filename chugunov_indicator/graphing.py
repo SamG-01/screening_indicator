@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Tuple
 
 import matplotlib
 from matplotlib.widgets import Slider, Button
@@ -9,7 +9,7 @@ __all__ = ["SliderGraph"]
 class SliderGraph:
     fig: matplotlib.figure.Figure
     ax: matplotlib.axes.Axes
-    params: dict[str: (float, float)]
+    params: dict[str, Tuple[float, float]]
     update: Callable[[float], None] = lambda val: None
 
     def __post_init__(self) -> None:
@@ -25,13 +25,13 @@ class SliderGraph:
         for j, param in enumerate(self.params):
             # Create axes
             min_, max_ = self.params[param]
-            self.ax_sliders[param] = self.fig.add_axes([0.15, 0.4 - j*0.05, 0.65, 0.03])
+            self.ax_sliders[param] = self.fig.add_axes((0.15, 0.4 - j*0.05, 0.65, 0.03))
 
             # Create sliders
             self.sliders[param] = Slider(self.ax_sliders[param], param, min_, max_, valinit=min_)
 
         # Create axes for reset button and create button
-        self.resetax = self.fig.add_axes([0.8, 0.105, 0.1, 0.04])
+        self.resetax = self.fig.add_axes((0.8, 0.105, 0.1, 0.04))
         self.button = Button(self.resetax, 'Reset', color='gold', hovercolor='skyblue')
 
         def resetSlider(event) -> None:
