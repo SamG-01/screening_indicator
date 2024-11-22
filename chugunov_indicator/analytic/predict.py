@@ -26,7 +26,14 @@ def _screening_intercept(abar: float, z2bar: float, z1: int, z2: int) -> float:
     return C0 + C1 + C2 + C3
 
 @njit
-def skip_chugunov_2009(plasma, scn_fac) -> bool:
+def _skip_chugunov_2009(T: float, D: float, abar: float,
+                        z2bar: float, z1: float, z2: float) -> bool:
+
+    C = _screening_intercept(abar, z2bar, z1, z2)
+    return np.log10(D) < 3 * np.log10(T) - C
+
+@njit
+def skip_chugunov_2009(state, scn_fac) -> bool:
     """
     Predicts whether screening for `chugunov_2009` can be skipped for a given rate calculation.
 
@@ -35,9 +42,6 @@ def skip_chugunov_2009(plasma, scn_fac) -> bool:
         `scn_fac`: a `ScreenFactors` object
     """
 
-    abar, z2bar = plasma.abar, plasma.z2bar
-    z1, z2 = scn_fac.z1, scn_fac.z2
-    C = _screening_intercept(abar, z2bar, z1, z2)
-
-    T, D = plasma.temp, plasma.dens
-    return np.log10(D) < 3 * np.log10(T) - C
+    return _skip_chugunov_2009(state.temp, state.dens,
+                               state.abar, state.z2bar,
+                               scn_fac.z1, scn_fac.z2)
