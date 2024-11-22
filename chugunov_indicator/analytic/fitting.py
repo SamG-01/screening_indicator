@@ -1,6 +1,6 @@
 import numpy as np
 
-from .chugunov_2009 import chugunov_2009
+from ..chugunov_2009 import chugunov_2009
 
 __all__ = ["intercept_from_vars"]
 

@@ -3,7 +3,7 @@ from numba import njit
 
 __all__ = ["skip_chugunov_2009"]
 
-@njit()
+@njit
 def _screening_intercept(abar: float, z2bar: float, z1: int, z2: int) -> float:
     """
     Predicts the negative `y`-intercept of the D-T line that decides when `chugunov_2009` screening is important.
@@ -25,7 +25,7 @@ def _screening_intercept(abar: float, z2bar: float, z1: int, z2: int) -> float:
 
     return C0 + C1 + C2 + C3
 
-@njit()
+@njit
 def skip_chugunov_2009(plasma, scn_fac) -> bool:
     """
     Predicts whether screening for `chugunov_2009` can be skipped for a given rate calculation.
