@@ -19,6 +19,7 @@ class ScreeningFactorData:
         # generate the D-T grid
         self.log_T = self.rng.uniform(7, 9.35, self.size)
         self.log_D = self.rng.uniform(-4, 8, self.size)
+        self.a = 3 * self.log_T - self.log_D
 
         # generate the parameter space
         self.abar = self.rng.uniform(1, 55, self.size)
@@ -27,8 +28,8 @@ class ScreeningFactorData:
         self.z2 = self.rng.integers(1, 20, self.size, endpoint=True)
 
         # stack the inputs into keras input vectors
-        self.inputs = np.column_stack((self.log_T, self.log_D, self.abar,
-                                       self.log_z2bar, self.z1, self.z2)).squeeze()
+        self.inputs = np.column_stack((self.a, self.abar, self.log_z2bar,
+                                       self.z1, self.z2)).squeeze()
 
         # exponentiates the log'ed variables for later reference
         self.T = 10**self.log_T

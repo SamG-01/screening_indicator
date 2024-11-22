@@ -105,7 +105,7 @@ class ScreeningFactorNetwork:
     def predict_params(self, T: float, D: float, abar: float, z2bar: float, z1: int, z2: int) -> bool:
         """Predicts whether screening can be skipped for supplied parameters."""        
 
-        inputs = np.vstack((np.log10(T), np.log10(D), abar,
+        inputs = np.vstack((3 * np.log10(T) - np.log10(D), abar,
                             np.log10(z2bar), z1, z2))
         if inputs.squeeze().ndim <= 1:
             inputs = inputs.T
