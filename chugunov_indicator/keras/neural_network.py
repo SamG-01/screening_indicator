@@ -102,15 +102,17 @@ class ScreeningFactorNetwork:
 
         self.score = self.model.evaluate(x=self.test.inputs, y=self.test.outputs, verbose=verbose)
 
-    def predict_params(self, T: float, D: float, abar: float, z2bar: float, z1: int, z2: int) -> bool:
+    def predict_params(self, T: float, D: float,
+                       abar: float, z2bar: float,
+                       z1: int, z2: int,
+                       confidence: float = 0.5) -> bool:
         """Predicts whether screening can be skipped for supplied parameters."""        
 
-        inputs = np.vstack((3 * np.log10(T) - np.log10(D), abar,
-                            np.log10(z2bar), z1, z2))
+        inputs = np.vstack((3*np.log10(T) - np.log10(D), abar, np.log10(z2bar), z1, z2))
         if inputs.squeeze().ndim <= 1:
             inputs = inputs.T
 
-        prediction = self.model.predict(inputs).squeeze().astype(bool)
+        prediction = self.model.predict(inputs).squeeze() >= confidence
         if not prediction.ndim:
             return prediction.item()
         return prediction
@@ -120,5 +122,7 @@ class ScreeningFactorNetwork:
         Predicts whether screening can be skipped for
         a supplied plasma state and screening factors."""
 
-        return self.predict_params(state.temp, state.dens, state.abar,
-                                   state.z2bar, scn_fac.z1, scn_fac.z2)
+        y0 = 3*np.log10(state.temp) - np.log10(state.dens)
+        return self.predict_params(state.temp, state.dens,
+                                   state.abar, state.z2bar,
+                                   scn_fac.z1, scn_fac.z2)

@@ -26,11 +26,10 @@ def _screening_intercept(abar: float, z2bar: float, z1: int, z2: int) -> float:
     return C0 + C1 + C2 + C3
 
 @njit
-def _skip_chugunov_2009(T: float, D: float, abar: float,
-                        z2bar: float, z1: float, z2: float) -> bool:
+def _skip_chugunov_2009(y0: float, abar: float, z2bar: float,
+                        z1: float, z2: float) -> bool:
 
-    C = _screening_intercept(abar, z2bar, z1, z2)
-    return np.log10(D) < 3 * np.log10(T) - C
+    return _screening_intercept(abar, z2bar, z1, z2) < y0
 
 @njit
 def skip_chugunov_2009(state, scn_fac) -> bool:
@@ -42,6 +41,6 @@ def skip_chugunov_2009(state, scn_fac) -> bool:
         `scn_fac`: a `ScreenFactors` object
     """
 
-    return _skip_chugunov_2009(state.temp, state.dens,
-                               state.abar, state.z2bar,
+    y0 = 3*np.log10(state.temp) - np.log10(state.dens)
+    return _skip_chugunov_2009(y0, state.abar, state.z2bar,
                                scn_fac.z1, scn_fac.z2)
