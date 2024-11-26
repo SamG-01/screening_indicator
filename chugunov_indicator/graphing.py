@@ -5,8 +5,8 @@ def D_T_setup(ax) -> None:
         for ax_ in ax:
             D_T_setup(ax_)
     except TypeError:
-        ax.set_xlabel("$T$")
-        ax.set_ylabel("$\\rho$")
+        ax.set_xlabel(r"$T$ $[\mathrm{K}]$")
+        ax.set_ylabel(r"$\rho$ $[\mathrm{g}/\mathrm{cm}^3]$")
 
         ax.set_xscale("log")
         ax.set_yscale("log")
