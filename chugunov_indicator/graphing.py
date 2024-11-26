@@ -11,12 +11,12 @@ def D_T_setup(ax) -> None:
         ax.set_xscale("log")
         ax.set_yscale("log")
 
-def D_T_colorgraph(T, D, y, fig, ax) -> tuple:
+def D_T_colorgraph(T, D, y, fig, ax, norm=None) -> tuple:
     """Creates a colormesh of y-data on a D-T graph."""
 
     D_T_setup(ax)
 
-    cb = ax.pcolormesh(T, D, y)
+    cb = ax.pcolormesh(T, D, y, norm=norm)
     cbar = fig.colorbar(cb)
 
     return cb, cbar
