@@ -108,9 +108,7 @@ class ScreeningFactorNetwork:
                        confidence: float = 0.5) -> bool:
         """Predicts whether screening can be skipped for supplied parameters."""        
 
-        inputs = np.vstack((3*np.log10(T) - np.log10(D), abar, np.log10(z2bar), z1, z2))
-        if inputs.squeeze().ndim <= 1:
-            inputs = inputs.T
+        inputs = np.vstack((3*np.log10(T) - np.log10(D), abar, np.log10(z2bar), z1, z2)).T
 
         prediction = self.model.predict(inputs).squeeze() >= confidence
         if not prediction.ndim:
