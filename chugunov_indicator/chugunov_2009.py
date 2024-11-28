@@ -1,10 +1,13 @@
 import numpy as np
 
+from numba import njit
+
 from pynucastro.constants import constants
 from pynucastro.screening.screen import f0
 
 __all__ = ["chugunov_2009"]
 
+@njit
 def PlasmaStateComps(D: float, abar: float, zbar: float) -> float:
     """Returns `PlasmaState` values used in screening correction factor calculation in `NumPy`-friendly form."""
 
@@ -21,6 +24,7 @@ def PlasmaStateComps(D: float, abar: float, zbar: float) -> float:
 
     return gamma_e_fac
 
+@njit
 def ScreenFactorsComps(
         z1: int, a1: int,
         z2: int, a2: int
@@ -37,6 +41,7 @@ def ScreenFactorsComps(
     #return zs13, zhat, zhat2, lzav, aznut, ztilde
     return aznut, ztilde
 
+@njit
 def chugunov_2009(
         T: float, D: float,
         abar: float, zbar: float, z2bar: float,

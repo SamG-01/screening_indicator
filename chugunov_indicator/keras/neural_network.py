@@ -110,7 +110,7 @@ class ScreeningFactorNetwork:
 
         inputs = np.vstack((3*np.log10(T) - np.log10(D), abar, np.log10(z2bar), z1, z2)).T
 
-        prediction = self.model.predict(inputs).squeeze() >= confidence
+        prediction = self.model.predict(inputs, verbose=0).squeeze() >= confidence
         if not prediction.ndim:
             return prediction.item()
         return prediction
